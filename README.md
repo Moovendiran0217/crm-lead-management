@@ -1,4 +1,83 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CRM Lead Management System
+
+Laravel API for managing insurance and finance sales leads, assignments, status transitions, and follow-ups.
+
+## Requirements
+
+- PHP 8.2+
+- Composer
+- SQLite, MySQL, or PostgreSQL
+- Node.js and npm (only needed for the bundled frontend assets)
+
+## Setup
+
+```bash
+composer install
+copy .env.example .env
+php artisan key:generate
+```
+
+Configure `DB_*` in `.env`. For SQLite, create `database/database.sqlite` and set `DB_CONNECTION=sqlite`.
+
+```bash
+php artisan migrate --seed
+php artisan serve
+```
+
+The API is available at `http://127.0.0.1:8000/api`.
+
+Seeded accounts:
+
+| Role | Email | Password |
+| --- | --- | --- |
+| ADMIN | admin@example.com | password |
+| SALES | sales1@example.com | password |
+
+## Authentication
+
+`POST /api/login` returns a Laravel Sanctum bearer token. Send it on protected requests with `Authorization: Bearer <token>`.
+
+## API Endpoints
+
+All endpoints below except login require authentication.
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/api/login` | Authenticate a user |
+| POST | `/api/logout` | Revoke the current token |
+| GET | `/api/me` | Get the authenticated user |
+| GET | `/api/dashboard` | Counts by lead status |
+| GET | `/api/leads` | Paginated lead list |
+| POST | `/api/leads` | Create a lead |
+| GET | `/api/leads/{id}` | View a lead and its follow-ups |
+| PUT | `/api/leads/{id}` | Update a lead |
+| DELETE | `/api/leads/{id}` | Delete a lead (admin only) |
+| POST | `/api/leads/{id}/followups` | Create a follow-up |
+| GET | `/api/leads/{id}/followups` | List follow-ups |
+| PUT | `/api/followups/{id}` | Update a follow-up |
+
+Lead listing supports `search`, `status`, `source`, `assigned_to`, `page`, and `per_page` query parameters. `per_page` is limited to 100.
+
+## Business Rules
+
+- Leads may only be assigned to active `SALES` users. Sales users are automatically assigned their own new leads.
+- An email cannot have more than one active lead. Active statuses are `NEW` and `FOLLOW_UP`.
+- Allowed transitions are `NEW -> CONTACTED`, `NEW -> LOST`, `CONTACTED -> FOLLOW_UP`, `CONTACTED -> LOST`, `FOLLOW_UP -> CONTACTED`, `FOLLOW_UP -> CONVERTED`, and `FOLLOW_UP -> LOST`.
+- `CONVERTED` and `LOST` leads cannot receive new follow-ups. Converted leads cannot be edited or deleted.
+- Follow-up dates cannot be in the past.
+- Admins can view and manage all leads. Sales users can view and update only assigned leads.
+
+## Testing
+
+```bash
+php artisan test
+```
+
+The feature suite covers lead creation, duplicate prevention, assignment validation, status protection, converted-lead deletion protection, and follow-up protection.
+
+## Postman
+
+Import `docs/crm-lead-management.postman_collection.json`. Set `base_url` to the running API URL, run Login first, and store the returned token in the `token` collection variable.
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>

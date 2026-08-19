@@ -16,13 +16,13 @@ class LeadService
     {
         return DB::transaction(function () use ($data, $user) {
 
-            $this->validateAssignment($data['assigned_to'] ?? null);
-
-            $this->checkDuplicateActiveLead($data['email']);
-
             if ($user->isSales()) {
                 $data['assigned_to'] = $user->id;
             }
+
+            $this->validateAssignment($data['assigned_to'] ?? null);
+
+            $this->checkDuplicateActiveLead($data['email']);
 
             $data['lead_code'] = $this->generateLeadCode();
 

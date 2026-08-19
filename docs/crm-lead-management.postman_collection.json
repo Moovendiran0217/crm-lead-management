@@ -1,0 +1,91 @@
+{
+  "info": {
+    "name": "CRM Lead Management API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "lead_id", "value": "1" },
+    { "key": "followup_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}" },
+        "url": "{{base_url}}/login"
+      }
+    },
+    {
+      "name": "Dashboard",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/dashboard"
+      }
+    },
+    {
+      "name": "List Leads",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/leads?per_page=15"
+      }
+    },
+    {
+      "name": "Create Lead",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"customer_name\": \"Example Customer\",\n  \"email\": \"customer@example.com\",\n  \"phone\": \"+919876543210\",\n  \"source\": \"WEBSITE\",\n  \"assigned_to\": 2,\n  \"status\": \"NEW\",\n  \"remarks\": \"Website enquiry\"\n}" },
+        "url": "{{base_url}}/leads"
+      }
+    },
+    {
+      "name": "Get Lead",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/leads/{{lead_id}}"
+      }
+    },
+    {
+      "name": "Create Follow-up",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"followup_date\": \"2030-01-15 10:00:00\",\n  \"notes\": \"Call customer\",\n  \"status\": \"PENDING\"\n}" },
+        "url": "{{base_url}}/leads/{{lead_id}}/followups"
+      }
+    },
+    {
+      "name": "List Follow-ups",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": "{{base_url}}/leads/{{lead_id}}/followups"
+      }
+    },
+    {
+      "name": "Update Follow-up",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"COMPLETED\",\n  \"notes\": \"Customer contacted\"\n}" },
+        "url": "{{base_url}}/followups/{{followup_id}}"
+      }
+    }
+  ]
+}
